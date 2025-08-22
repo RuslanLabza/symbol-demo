@@ -30,7 +30,7 @@ const THEME = {
       background: 'black'
     },
     '@light': {
-      background: 'white',
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
       color: 'black'
     },
     '@midnight': {

@@ -13,14 +13,12 @@ create({
     theme: 'document',
     flow: 'column',
     height: '100vh',
-    align: 'center space-between'
+    align: 'center center',
+    justify: 'center',
+    padding: 'C'
   },
 
-  Header: {},
-
-  content: {},
-
-  Footer: { text: 'Footer' }
+  content: {}
 }, {
   designSystem,
   components,

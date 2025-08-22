@@ -1,9 +1,12 @@
 {
   "name": "@symbo.ls/starter-kit",
   "version": "2.29.4",
-  "description": "Example dev setup to use Symbols",
+  "description": "GridSelection component with CLI tool using Symbols.js",
   "author": "symbo.ls",
-  "repository": "https://github.com/symbo-ls/starter-kit",
+  "repository": "https://github.com/RuslanLabza/symbol-demo",
+  "bin": {
+    "grid-cli": "./cli.js"
+  },
   "scripts": {
     "start": "parcel index.html",
     "build": "parcel build index.html"
