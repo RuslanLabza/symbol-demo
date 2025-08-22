@@ -47,6 +47,36 @@ export const ThemeSwitcher = {
   midnight: { text: 'Midnight' }
 }
 
+const GridCell = {
+  extend: 'div',
+  props: (element, state) => {
+    const colIndex = Number(element?.colIndex ?? element?.props?.colIndex)
+    const rowIndex = Number(element?.rowIndex ?? element?.props?.rowIndex)
+    const isSelected = Number.isFinite(colIndex) && Number.isFinite(rowIndex) &&
+      colIndex <= state.selectedX && rowIndex <= state.selectedY
+
+    return {
+      class: 'grid-cell',
+      dataset: { col: colIndex, row: rowIndex },
+      width: '32px',
+      height: '32px',
+      background: isSelected ? '#4A90E2' : '#e8e8e8',
+      borderRadius: '4px',
+      cursor: 'pointer',
+      transition: 'all 0.2s ease',
+      border: '1px solid #ddd',
+      ':hover': { background: isSelected ? '#357ABD' : '#d0d0d0' }
+    }
+  },
+  on: {
+    click: (event, element, state) => {
+      const colIndex = Number(element?.colIndex ?? element?.props?.colIndex)
+      const rowIndex = Number(element?.rowIndex ?? element?.props?.rowIndex)
+      if (!Number.isFinite(colIndex) || !Number.isFinite(rowIndex)) return
+      state.update({ selectedX: colIndex, selectedY: rowIndex })
+    }
+  }
+}
 export const GridSelection = {
   extend: Flex,
   props: {
@@ -64,8 +94,8 @@ export const GridSelection = {
   state: {
     selectedX: -1,
     selectedY: -1,
-    columns: 8,
-    rows: 4
+    columns: 11,
+    rows: 8
   },
 
   H2: {
@@ -80,48 +110,38 @@ export const GridSelection = {
 
   GridContainer: {
     extend: Flex,
-    props: {
+    props: (element, state) => ({
       flow: 'column',
       gap: '2px',
       background: '#f0f0f0',
       padding: '8px',
       borderRadius: '8px',
-      overflow: 'auto'
-    },
-
-    props: (element, state) => ({
+      overflow: 'auto',
       children: Array.from({ length: state.rows }, (_, rowIndex) => ({
         [`Row_${rowIndex}`]: {
           extend: Flex,
           props: {
-            gap: '2px'
-          },
-          props: () => ({
+            gap: '2px',
             children: Array.from({ length: state.columns }, (_, colIndex) => ({
               [`Cell_${colIndex}`]: {
                 extend: 'div',
                 props: {
                   width: '32px',
                   height: '32px',
-                  background: (state.selectedX >= colIndex && state.selectedY >= rowIndex) ? '#4A90E2' : '#e8e8e8',
+                  background: (colIndex <= state.selectedX && rowIndex <= state.selectedY) ? '#4A90E2' : '#e8e8e8',
                   borderRadius: '4px',
                   cursor: 'pointer',
                   transition: 'all 0.2s ease',
-                  ':hover': {
-                    background: (state.selectedX >= colIndex && state.selectedY >= rowIndex) ? '#357ABD' : '#d0d0d0'
-                  }
+                  border: '1px solid #ddd'
                 },
                 on: {
-                  click: (event, element, state) => {
-                    state.update({
-                      selectedX: colIndex,
-                      selectedY: rowIndex
-                    })
+                  click: (event, element, st) => {
+                    st.update({ selectedX: colIndex, selectedY: rowIndex })
                   }
                 }
               }
             }))
-          })
+          }
         }
       }))
     })
@@ -141,7 +161,7 @@ export const GridSelection = {
 
     SelectionCoords: {
       props: (element, state) => ({
-        text: `Selection coordinates: ${state.selectedX >= 0 ? `${state.selectedX},${state.selectedY}` : 'None'}`
+        text: `Selection coordinates: ${state.selectedX >= 0 ? `${state.selectedX + 1},${state.selectedY + 1}` : 'None'}`
       })
     },
 
