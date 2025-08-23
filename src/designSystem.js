@@ -44,13 +44,19 @@ const THEME = {
  * Fonts
  * @tutorial https://docs.symbols.app/font
  */
-const FONT = {}
+const FONT = {
+  base: {
+    fontFamily: "Europa, 'Europa Regular', 'Europa-Regular', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica Neue, Arial, sans-serif"
+  }
+}
 
 /**
  * Font families
  * @tutorial https://docs.symbols.app/font
  */
-const FONT_FAMILY = {}
+const FONT_FAMILY = {
+  Europa: "Europa, 'Europa Regular', 'Europa-Regular', sans-serif"
+}
 
 /**
  * Typography

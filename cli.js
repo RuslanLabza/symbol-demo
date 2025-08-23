@@ -56,143 +56,44 @@ function initProject (projectName) {
 }
 
 function generateGridComponent (columns = 16, rows = 8) {
-  const componentCode = `export const GridSelection = {
-  extend: Flex,
-  props: {
-    flow: 'column',
-    gap: 'B',
-    padding: 'C',
-    background: 'white',
-    borderRadius: '12px',
-    boxShadow: '0 4px 24px rgba(0,0,0,0.1)',
-    width: 'fit-content',
-    maxWidth: '90vw',
-    maxHeight: '90vh'
-  },
-
-  state: {
-    selectedX: -1,
-    selectedY: -1,
-    columns: ${columns},
-    rows: ${rows}
-  },
-
-  H2: {
-    text: 'Grid Selection',
-    props: {
-      margin: '0 0 B 0',
-      fontSize: '24px',
-      fontWeight: '600',
-      color: '#333'
-    }
-  },
-
-  GridContainer: {
-    extend: Flex,
-    props: (element, state) => ({
-      flow: 'column',
-      gap: '2px',
-      background: '#f0f0f0',
-      padding: '8px',
-      borderRadius: '8px',
-      overflow: 'auto',
-      children: Array.from({ length: state.rows }, (_, rowIndex) => ({
-        [\`Row_\${rowIndex}\`]: {
-          extend: Flex,
-          props: {
-            gap: '2px',
-            children: Array.from({ length: state.columns }, (_, colIndex) => ({
-              [\`Cell_\${colIndex}\`]: {
-                extend: 'div',
-                props: {
-                  width: '32px',
-                  height: '32px',
-                  background: (colIndex <= state.selectedX && rowIndex <= state.selectedY) ? '#4A90E2' : '#e8e8e8',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  border: '1px solid #ddd'
-                },
-                on: {
-                  click: (event, element, st) => {
-                    st.update({ selectedX: colIndex, selectedY: rowIndex })
-                  }
-                }
-              }
-            }))
-          }
-        }
-      }))
-    })
-  },
-
-  Footer: {
-    extend: Flex,
-    props: {
-      align: 'center space-between',
-      minWidth: '100%',
-      marginTop: 'B',
-      padding: 'A2 0',
-      borderTop: '1px solid #eee',
-      fontSize: '14px',
-      color: '#666'
-    },
-
-    SelectionCoords: {
-      props: (element, state) => ({
-        text: \`Selection coordinates: \${state.selectedX >= 0 ? \`\${state.selectedX + 1},\${state.selectedY + 1}\` : 'None'}\`
-      })
-    },
-
-    TotalSelected: {
-      props: (element, state) => ({
-        text: \`Total cells selected: \${state.selectedX >= 0 ? (state.selectedX + 1) * (state.selectedY + 1) : 0}\`
-      })
-    }
-  }
-}`
-
-  // Read existing components file
   const componentsPath = path.join(process.cwd(), 'src', 'components.js')
   if (!fs.existsSync(componentsPath)) {
     console.error('Error: src/components.js not found. Make sure you are in a Symbols project directory.')
     process.exit(1)
   }
 
-  let componentsContent = fs.readFileSync(componentsPath, 'utf8')
+  const original = fs.readFileSync(componentsPath, 'utf8')
 
-  // Replace or insert GridSelection export
-  const gridSelectionRegex = /export const GridSelection = \{[\s\S]*?\n\}/
-  if (gridSelectionRegex.test(componentsContent)) {
-    componentsContent = componentsContent.replace(gridSelectionRegex, componentCode)
-    console.log(`Updated GridSelection component with ${columns}x${rows} grid`)
-  } else {
-    const lastExportIndex = componentsContent.lastIndexOf('export const')
-    if (lastExportIndex !== -1) {
-      componentsContent = componentsContent.slice(0, lastExportIndex) + componentCode + '\n\n' + componentsContent.slice(lastExportIndex)
-    } else {
-      componentsContent += '\n\n' + componentCode
-    }
-    console.log(`Added GridSelection component with ${columns}x${rows} grid`)
+  // Find GridSelection export and its state block
+  const gridIdx = original.indexOf('export const GridSelection')
+  if (gridIdx === -1) {
+    console.error('Error: GridSelection export not found in src/components.js')
+    process.exit(1)
   }
 
-  fs.writeFileSync(componentsPath, componentsContent)
-
-  // Ensure pages.js mounts GridSelection on '/'
-  const pagesPath = path.join(process.cwd(), 'src', 'pages.js')
-  if (fs.existsSync(pagesPath)) {
-    let pagesContent = fs.readFileSync(pagesPath, 'utf8')
-    if (!pagesContent.includes('GridSelection: {}')) {
-      pagesContent = pagesContent.replace(/  '\/': \{[\s\S]*?\}/, "  '/': {\n    GridSelection: {}\n  }")
-      fs.writeFileSync(pagesPath, pagesContent)
-      console.log('Updated pages.js to include GridSelection component')
-    }
+  const afterGrid = original.slice(gridIdx)
+  const stateMatch = afterGrid.match(/state:\s*\{[\s\S]*?\}/)
+  if (!stateMatch) {
+    console.error('Error: Could not locate state block for GridSelection in src/components.js')
+    process.exit(1)
   }
 
-  console.log(`\nGrid component generated successfully!`)
-  console.log(`Grid size: ${columns} columns × ${rows} rows`)
-  console.log(`Total cells: ${columns * rows}`)
-  console.log(`\nRun 'npm start' to see your grid in action.`)
+  const stateBlock = stateMatch[0]
+  let updatedState = stateBlock
+  updatedState = updatedState.replace(/(columns:\s*)\d+/, `$1${columns}`)
+  updatedState = updatedState.replace(/(rows:\s*)\d+/, `$1${rows}`)
+
+  if (updatedState === stateBlock) {
+    console.warn('Warning: columns/rows values were not changed (already set?)')
+  }
+
+  const updated = original.slice(0, gridIdx) + afterGrid.replace(stateBlock, updatedState)
+  fs.writeFileSync(componentsPath, updated)
+
+  console.log('Updated GridSelection defaults:')
+  console.log(`  columns = ${columns}`)
+  console.log(`  rows    = ${rows}`)
+  console.log("Restart 'npm start' if running to see changes.")
 }
 
 function parseArgs (args) {

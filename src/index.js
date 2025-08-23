@@ -15,7 +15,8 @@ create({
     height: '100vh',
     align: 'center center',
     justify: 'center',
-    padding: 'C'
+    padding: 'C',
+    fontFamily: 'Europa'
   },
 
   content: {}

@@ -47,43 +47,25 @@ export const ThemeSwitcher = {
   midnight: { text: 'Midnight' }
 }
 
-const GridCell = {
+const CellBase = {
   extend: 'div',
-  props: (element, state) => {
-    const colIndex = Number(element?.colIndex ?? element?.props?.colIndex)
-    const rowIndex = Number(element?.rowIndex ?? element?.props?.rowIndex)
-    const isSelected = Number.isFinite(colIndex) && Number.isFinite(rowIndex) &&
-      colIndex <= state.selectedX && rowIndex <= state.selectedY
-
-    return {
-      class: 'grid-cell',
-      dataset: { col: colIndex, row: rowIndex },
-      width: '32px',
-      height: '32px',
-      background: isSelected ? '#4A90E2' : '#e8e8e8',
-      borderRadius: '4px',
-      cursor: 'pointer',
-      transition: 'all 0.2s ease',
-      border: '1px solid #ddd',
-      ':hover': { background: isSelected ? '#357ABD' : '#d0d0d0' }
-    }
-  },
-  on: {
-    click: (event, element, state) => {
-      const colIndex = Number(element?.colIndex ?? element?.props?.colIndex)
-      const rowIndex = Number(element?.rowIndex ?? element?.props?.rowIndex)
-      if (!Number.isFinite(colIndex) || !Number.isFinite(rowIndex)) return
-      state.update({ selectedX: colIndex, selectedY: rowIndex })
-    }
+  props: {
+    width: '26px',
+    height: '26px',
+    borderRadius: '6px',
+    cursor: 'pointer',
+    transition: 'background 0.15s ease, transform 0.05s ease',
+    border: '1px solid #E0E7FF'
   }
 }
+
 export const GridSelection = {
   extend: Flex,
   props: {
     flow: 'column',
     gap: 'B',
     padding: 'C',
-    background: 'white',
+    background: '#F0F0F0',
     borderRadius: '12px',
     boxShadow: '0 4px 24px rgba(0,0,0,0.1)',
     width: 'fit-content',
@@ -101,9 +83,11 @@ export const GridSelection = {
   H2: {
     text: 'Grid Selection',
     props: {
-      margin: '0 0 B 0',
-      fontSize: '24px',
-      fontWeight: '600',
+      fontFamily: 'Europa',
+      fontWeight: '700',
+      fontSize: '16px',
+      lineHeight: '100%',
+      letterSpacing: '0',
       color: '#333'
     }
   },
@@ -112,28 +96,25 @@ export const GridSelection = {
     extend: Flex,
     props: (element, state) => ({
       flow: 'column',
-      gap: '2px',
-      background: '#f0f0f0',
-      padding: '8px',
+      gap: '4px',
+      background: '#FFFFFF',
+      padding: '10px',
       borderRadius: '8px',
       overflow: 'auto',
       children: Array.from({ length: state.rows }, (_, rowIndex) => ({
         [`Row_${rowIndex}`]: {
           extend: Flex,
           props: {
-            gap: '2px',
+            gap: '4px',
             children: Array.from({ length: state.columns }, (_, colIndex) => ({
               [`Cell_${colIndex}`]: {
-                extend: 'div',
-                props: {
-                  width: '32px',
-                  height: '32px',
-                  background: (colIndex <= state.selectedX && rowIndex <= state.selectedY) ? '#4A90E2' : '#e8e8e8',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  border: '1px solid #ddd'
-                },
+                extend: CellBase,
+                props: (el, st) => ({
+                  background: (colIndex <= st.selectedX && rowIndex <= st.selectedY) ? '#3D7BD9' : '#E8F1FF',
+                  ':hover': {
+                    background: (colIndex <= st.selectedX && rowIndex <= st.selectedY) ? '#2F69C6' : '#DCE9FF'
+                  }
+                }),
                 on: {
                   click: (event, element, st) => {
                     st.update({ selectedX: colIndex, selectedY: rowIndex })
@@ -150,25 +131,37 @@ export const GridSelection = {
   Footer: {
     extend: Flex,
     props: {
-      justify: 'space-between',
-      align: 'center',
-      marginTop: 'B',
-      padding: 'A2 0',
-      borderTop: '1px solid #eee',
+      align: 'center space-between',
+      minWidth: '100%',
+      padding: '0 0 0 0',
       fontSize: '14px',
       color: '#666'
     },
 
     SelectionCoords: {
-      props: (element, state) => ({
-        text: `Selection coordinates: ${state.selectedX >= 0 ? `${state.selectedX + 1},${state.selectedY + 1}` : 'None'}`
-      })
+      extend: Flex,
+      props: { gap: '4px', color: '#888' },
+      Label: { text: 'Selection coordinates:' },
+      Value: {
+        props: (element, state) => ({
+          text: state.selectedX >= 0 ? `${state.selectedX + 1},${state.selectedY + 1}` : 'None',
+          color: '#000',
+          fontWeight: '700'
+        })
+      }
     },
 
     TotalSelected: {
-      props: (element, state) => ({
-        text: `Total cells selected: ${state.selectedX >= 0 ? (state.selectedX + 1) * (state.selectedY + 1) : 0}`
-      })
+      extend: Flex,
+      props: { gap: '4px', color: '#888' },
+      Label: { text: 'Total cells selected:' },
+      Value: {
+        props: (element, state) => ({
+          text: `${state.selectedX >= 0 ? (state.selectedX + 1) * (state.selectedY + 1) : 0}`,
+          color: '#000',
+          fontWeight: '700'
+        })
+      }
     }
   }
 }
