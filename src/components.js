@@ -50,8 +50,8 @@ export const ThemeSwitcher = {
 const CellBase = {
   extend: 'div',
   props: {
-    width: '26px',
-    height: '26px',
+    width: 'B',
+    height: 'B',
     borderRadius: '6px',
     cursor: 'pointer',
     transition: 'background 0.15s ease, transform 0.05s ease',
@@ -66,8 +66,7 @@ export const GridSelection = {
     gap: 'B',
     padding: 'A1 B',
     background: '#F0F0F0',
-    borderRadius: '12px',
-    boxShadow: '0 4px 24px rgba(0,0,0,0.1)',
+    borderRadius: 'Z1',
     width: 'fit-content',
     maxWidth: '90vw',
     maxHeight: '90vh'
@@ -85,7 +84,7 @@ export const GridSelection = {
     props: {
       fontFamily: 'Europa',
       fontWeight: '700',
-      fontSize: '16px',
+      fontSize: 'A',
       lineHeight: '100%',
       letterSpacing: '0',
       color: '#333'
@@ -98,8 +97,8 @@ export const GridSelection = {
       flow: 'column',
       gap: '4px',
       background: '#FFFFFF',
-      padding: '10px',
-      borderRadius: '8px',
+      padding: 'Z',
+      borderRadius: 'Z',
       overflow: 'auto',
       children: Array.from({ length: state.rows }, (_, rowIndex) => ({
         [`Row_${rowIndex}`]: {
@@ -133,7 +132,7 @@ export const GridSelection = {
     props: {
       align: 'center space-between',
       minWidth: '100%',
-      padding: '0 0 0 0',
+      padding: '0',
       fontSize: '14px',
       color: '#666'
     },
