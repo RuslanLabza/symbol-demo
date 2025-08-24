@@ -75,7 +75,7 @@ export const GridSelection = {
   state: {
     selectedX: -1,
     selectedY: -1,
-    columns: 11,
+    columns: 16,
     rows: 8
   },
 
