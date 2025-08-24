@@ -64,7 +64,7 @@ export const GridSelection = {
   props: {
     flow: 'column',
     gap: 'B',
-    padding: 'C',
+    padding: 'A1 B',
     background: '#F0F0F0',
     borderRadius: '12px',
     boxShadow: '0 4px 24px rgba(0,0,0,0.1)',
